@@ -11,6 +11,7 @@ function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, 'webtoken');
+    console.log('decoded', decoded)
     req.user = decoded; 
     next();
   } catch (err) {
