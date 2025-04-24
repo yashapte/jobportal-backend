@@ -61,7 +61,7 @@ router.post('/user/login', async function (req, res) {
       return res.status(400).json({ msg: "Invalid password" });
     }
 
-    const token = jwt.sign({ email: foundUser.email }, 'webtoken', {
+    const token = jwt.sign({foundUser}, 'webtoken', {
       expiresIn: '1d',
     });
 
@@ -83,7 +83,7 @@ router.post('/user/login', async function (req, res) {
 
 //profile
 router.post('/user/profile',authenticateToken,async function(req,res){
-  const loggedinuser = await User.findOne({email:req.user.email}).exec()
+  const loggedinuser = await User.findOne({email:req.user.foundUser.email}).exec()
   console.log(loggedinuser);
   return res.status(200).json({msg:"logged in user",loggedinuser})
 })
