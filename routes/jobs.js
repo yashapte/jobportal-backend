@@ -23,7 +23,7 @@ router.post('/register/rc', async function (req, res) {
   } else {
     var newuser = new User({
 
-      isAdmin: "true",
+      isAdmin: true,
       name,
       email,
       password: changepassword(password)
@@ -50,7 +50,7 @@ router.post('/login/rc',async function (req, res) {
       return res.status(400).json({ msg: "Invalid email user not found" });
     } else {
 
-      const token = jwt.sign({ email: founduser.email }, 'webtoken', { expiresIn: "1d" })
+      const token = jwt.sign({email}, 'webtoken', { expiresIn: "1d" })
       res.cookie('Token', token, {
         httpOnly: true,
         sameSite: 'Lax',
@@ -66,7 +66,7 @@ router.post('/login/rc',async function (req, res) {
 })
 
 router.post('/profile/rc', authenticateToken, async function (req, res) {
-  const loggedinuser = await User.findOne({ email: req.user.email }).exec()
+  const loggedinuser = await User.findOne({email: req.user.email}).exec()
   console.log(loggedinuser);
   return res.status(200).json({ msg: "logged in user", loggedinuser })
 })

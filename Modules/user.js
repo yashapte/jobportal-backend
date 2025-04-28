@@ -19,6 +19,10 @@ var userModel = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    profileImage: {    
+        type: String,
+       // required: true,  
+      },
     jobid: {
         type: mongoose.Schema.Types.ObjectId,
       },
