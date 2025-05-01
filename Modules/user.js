@@ -17,11 +17,10 @@ var userModel = mongoose.Schema({
     
     isAdmin:{
         type: Boolean,
-        default: false
+        default: false,
     },
     profileImage: {    
-        type: String,
-       // required: true,  
+        type: String,  
       },
     jobid: {
         type: mongoose.Schema.Types.ObjectId,

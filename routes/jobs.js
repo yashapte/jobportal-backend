@@ -7,15 +7,35 @@ const normal = require('../Middleware/auth.js')
 const authenticateToken = require('../Middleware/auth.js');
 var { changepassword } = require('../Modules/changepasswords')
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 
+cloudinary.config({
+  cloud_name: 'dbj7gjuqq',
+  api_key: '397953866216842',
+  api_secret: '_81aTlJnGiKTXeEZKZLNfSAtGFI',
+});
 
-router.post('/register/rc', async function (req, res) {
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'User_Profile_Image',
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.post('/register/rc', upload.single('profileImage'),async function (req, res) {
+try {
+  
 
   console.log("Admin register route");
-  console.log(req.body)
-  var { name, email, password, isAdmin } = req.body;
-
+  //console.log(req.body)
+  var { name, email, password } = req.body;
+  const profileImageUrl = req.file.path;
   const founduser = await User.findOne({ email: req.body.email }).exec();
 
   if (founduser) {
@@ -23,14 +43,18 @@ router.post('/register/rc', async function (req, res) {
   } else {
     var newuser = new User({
 
-      isAdmin: true,
+      isAdmin : true,
       name,
       email,
-      password: changepassword(password)
+      password: changepassword(password),
+      profileImage: profileImageUrl
     });
     newuser.save();
     res.status(200).json(newuser);
   }
+} catch (error) {
+  console.log(error.message)
+}
 
 })
 
@@ -45,6 +69,9 @@ router.post('/login/rc',async function (req, res) {
       return res.json({ "msg": "Invalid email user not found" })
     }
 
+    if (!founduser.isAdmin) {
+      return res.status(403).json({ message: 'Access denied. You are not an admin.' });
+    }
     const ismatched = await bcrypt.compare(password, founduser.password)
     if (!ismatched) {
       return res.status(400).json({ msg: "Invalid email user not found" });
